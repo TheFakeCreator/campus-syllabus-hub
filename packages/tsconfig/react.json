@@ -1,0 +1,10 @@
+{
+    "extends": "./base.json",
+    "compilerOptions": {
+        "jsx": "react-jsx",
+        "lib": [
+            "DOM",
+            "ES2021"
+        ]
+    }
+}

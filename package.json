@@ -1,0 +1,16 @@
+{
+    "name": "campus-syllabus-hub",
+    "private": true,
+    "version": "1.0.0",
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "license": "MIT",
+    "scripts": {
+        "lint": "eslint . --ext .js,.ts,.tsx,.jsx",
+        "format": "prettier --write .",
+        "test": "echo \"No tests yet\"",
+        "typecheck": "tsc --noEmit -p packages/tsconfig/base.json"
+    }
+}

@@ -1,0 +1,6 @@
+{
+    "name": "@campus-syllabus-hub/tsconfig",
+    "version": "1.0.0",
+    "main": "base.json",
+    "license": "MIT"
+}
