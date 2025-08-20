@@ -6,6 +6,9 @@ export interface IUser extends Document {
     email: string;
     passwordHash: string;
     role: 'student' | 'moderator' | 'admin';
+    isEmailVerified: boolean;
+    emailVerificationToken?: string;
+    emailVerificationExpires?: Date;
     createdAt: Date;
     comparePassword(password: string): Promise<boolean>;
 }
@@ -15,6 +18,9 @@ const UserSchema = new Schema<IUser>({
     email: { type: String, required: true, unique: true, index: true },
     passwordHash: { type: String, required: true, select: false },
     role: { type: String, enum: ['student', 'moderator', 'admin'], default: 'student' },
+    isEmailVerified: { type: Boolean, default: false },
+    emailVerificationToken: { type: String, select: false },
+    emailVerificationExpires: { type: Date, select: false },
     createdAt: { type: Date, default: Date.now },
 });
 

@@ -9,29 +9,7 @@ export const register = async (req: Request, res: Response) => {
         const { name, email, password } = req.body;
         const result = await authService.register(name, email, password);
 
-        // Set cookies
-        res.cookie('accessToken', result.accessToken, {
-            httpOnly: true,
-            secure: env.COOKIE_SECURE,
-            sameSite: 'strict',
-            maxAge: 15 * 60 * 1000, // 15 minutes
-        });
-
-        res.cookie('refreshToken', result.refreshToken, {
-            httpOnly: true,
-            secure: env.COOKIE_SECURE,
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        });
-
-        res.status(201).json({
-            message: 'Registration successful',
-            user: result.user,
-            tokens: {
-                accessToken: result.accessToken,
-                refreshToken: result.refreshToken,
-            },
-        });
+        res.status(201).json(result);
     } catch (error) {
         res.status(400).json({ message: error instanceof Error ? error.message : 'Registration failed' });
     }
@@ -123,5 +101,27 @@ export const me = async (req: Request, res: Response) => {
         res.json({ user: req.user });
     } catch (error) {
         res.status(500).json({ message: 'Failed to get user info' });
+    }
+};
+
+export const verifyEmail = async (req: Request, res: Response) => {
+    try {
+        const { token } = req.params;
+        const result = await authService.verifyEmail(token);
+
+        res.json(result);
+    } catch (error) {
+        res.status(400).json({ message: error instanceof Error ? error.message : 'Email verification failed' });
+    }
+};
+
+export const resendVerificationEmail = async (req: Request, res: Response) => {
+    try {
+        const { email } = req.body;
+        const result = await authService.resendVerificationEmail(email);
+
+        res.json(result);
+    } catch (error) {
+        res.status(400).json({ message: error instanceof Error ? error.message : 'Failed to resend verification email' });
     }
 };

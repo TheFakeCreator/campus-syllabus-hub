@@ -18,6 +18,10 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [showResendVerification, setShowResendVerification] = useState(false);
+    const [resendEmail, setResendEmail] = useState('');
+    const [resendLoading, setResendLoading] = useState(false);
+    const [resendMessage, setResendMessage] = useState('');
     const { setUser } = useAuthStore();
     const navigate = useNavigate();
 
@@ -32,15 +36,39 @@ const Login = () => {
     const onSubmit = async (data: LoginForm) => {
         setIsLoading(true);
         setError('');
+        setShowResendVerification(false);
 
         try {
             const response = await api.post('/auth/login', data);
             setUser(response.data.user);
             navigate('/');
         } catch (error: any) {
-            setError(error.response?.data?.message || 'Login failed');
+            const errorMessage = error.response?.data?.message || 'Login failed';
+            setError(errorMessage);
+
+            // If error is about email verification, show resend option
+            if (errorMessage.includes('verify your email')) {
+                setShowResendVerification(true);
+                setResendEmail(data.email);
+            }
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleResendVerification = async () => {
+        setResendLoading(true);
+        setResendMessage('');
+
+        try {
+            await api.post('/auth/resend-verification', {
+                email: resendEmail,
+            });
+            setResendMessage('Verification email sent successfully! Please check your inbox.');
+        } catch (error: any) {
+            setResendMessage(error.response?.data?.message || 'Failed to resend verification email');
+        } finally {
+            setResendLoading(false);
         }
     };
 
@@ -85,12 +113,12 @@ const Login = () => {
                                 {...register('password')}
                                 type={showPassword ? 'text' : 'password'}
                                 autoComplete="current-password"
-                                className="relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                className="relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                 placeholder="Password"
                             />
                             <button
                                 type="button"
-                                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center z-20"
                                 onClick={() => setShowPassword(!showPassword)}
                             >
                                 {showPassword ? (
@@ -106,7 +134,35 @@ const Login = () => {
                     </div>
 
                     {error && (
-                        <div className="text-red-600 text-sm text-center">{error}</div>
+                        <div className="text-red-600 text-sm text-center">
+                            {error}
+                        </div>
+                    )}
+
+                    {showResendVerification && (
+                        <div className="bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
+                            <div className="text-center">
+                                <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-3">
+                                    Need to verify your email?
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={handleResendVerification}
+                                    disabled={resendLoading}
+                                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-yellow-800 dark:text-yellow-200 bg-yellow-100 dark:bg-yellow-800 hover:bg-yellow-200 dark:hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {resendLoading ? 'Sending...' : 'Resend Verification Email'}
+                                </button>
+                                {resendMessage && (
+                                    <p className={`mt-2 text-sm ${resendMessage.includes('successfully')
+                                            ? 'text-green-600 dark:text-green-400'
+                                            : 'text-red-600 dark:text-red-400'
+                                        }`}>
+                                        {resendMessage}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
                     )}
 
                     <div>

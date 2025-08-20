@@ -8,6 +8,8 @@ import Subject from './pages/Subject.tsx';
 import Contribute from './pages/Contribute.tsx';
 import Profile from './pages/Profile.tsx';
 import Login from './pages/Login.tsx';
+import Register from './pages/Register.tsx';
+import VerifyEmail from './pages/VerifyEmail.tsx';
 import Roadmaps from './pages/Roadmaps.tsx';
 import RoadmapDetail from './pages/RoadmapDetail.tsx';
 import CreateRoadmap from './pages/CreateRoadmap.tsx';
@@ -49,6 +51,8 @@ function App() {
                 <Route path="/contribute" element={<Contribute />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/verify-email/:token" element={<VerifyEmail />} />
                 <Route path="/roadmaps" element={<Roadmaps />} />
                 <Route path="/roadmaps/:id" element={<RoadmapDetail />} />
                 <Route path="/roadmaps/create" element={<CreateRoadmap />} />

@@ -18,3 +18,7 @@ export const refreshSchema = z.object({
 export const logoutSchema = z.object({
     refreshToken: z.string(),
 });
+
+export const resendVerificationEmailSchema = z.object({
+    email: z.string().email(),
+});

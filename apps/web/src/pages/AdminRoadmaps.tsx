@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { getRoadmapsAdmin, updateRoadmapAdmin, approveRoadmap, deleteRoadmapAdmin } from '../lib/admin';
+import { getRoadmapsAdmin, approveRoadmap, deleteRoadmapAdmin } from '../lib/admin';
 import type { AdminRoadmap, PaginatedResponse } from '../lib/admin';
-import { Search, Trash2, ExternalLink, ChevronLeft, ChevronRight, Map, CheckCircle, XCircle, Edit } from 'lucide-react';
+import { Search, Trash2, ExternalLink, ChevronLeft, ChevronRight, Map, CheckCircle, XCircle } from 'lucide-react';
 
 const AdminRoadmaps: React.FC = () => {
     const [roadmaps, setRoadmaps] = useState<AdminRoadmap[]>([]);
