@@ -18,6 +18,7 @@ import resourceRoutes from './features/resources/resource.routes.js';
 import searchRoutes from './features/search/search.routes.js';
 import roadmapRoutes from './features/roadmaps/roadmap.routes.js';
 import ratingRoutes from './features/ratings/rating.routes.js';
+import adminRoutes from './features/admin/admin.routes.js';
 
 dotenv.config();
 
@@ -43,6 +44,7 @@ apiV1.use('/resources', resourceRoutes);
 apiV1.use('/search', searchRoutes);
 apiV1.use('/roadmaps', roadmapRoutes);
 apiV1.use('/ratings', ratingRoutes);
+apiV1.use('/admin', adminRoutes);
 
 // Health check endpoint
 app.get('/healthz', (req, res) => {

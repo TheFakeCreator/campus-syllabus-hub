@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Resource } from '../resources/resource.model.js';
 import { Subject } from '../catalog/subject.model.js';
+import { Roadmap } from '../roadmaps/roadmap.model.js';
 import { paginationSchema } from '../../utils/pagination.js';
 
 export const searchResources = async (req: Request, res: Response) => {
@@ -112,8 +113,8 @@ export const globalSearch = async (req: Request, res: Response) => {
 
         const skip = (Number(page) - 1) * Number(limit);
 
-        // Search both resources and subjects
-        const [resources, subjects] = await Promise.all([
+        // Search resources, subjects, and roadmaps
+        const [resources, subjects, roadmaps] = await Promise.all([
             Resource.find(
                 { isApproved: true, $text: { $search: q } },
                 { score: { $meta: 'textScore' } }
@@ -130,13 +131,23 @@ export const globalSearch = async (req: Request, res: Response) => {
                 .populate('branchRef', 'code name')
                 .populate('semesterRef', 'number')
                 .sort({ score: { $meta: 'textScore' } })
+                .limit(10),
+
+            Roadmap.find(
+                { isApproved: true, isPublic: true, $text: { $search: q } },
+                { score: { $meta: 'textScore' } }
+            )
+                .populate('subjectRef', 'code name')
+                .populate('createdBy', 'name')
+                .sort({ score: { $meta: 'textScore' } })
                 .limit(10)
         ]);
 
         res.json({
             results: {
                 resources,
-                subjects
+                subjects,
+                roadmaps
             },
             query: q
         });

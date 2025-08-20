@@ -24,6 +24,7 @@ export interface IRoadmap extends Document {
     steps: IRoadmapStep[];
     createdBy: Types.ObjectId;
     isPublic: boolean;
+    isApproved: boolean;
     tags: string[];
     createdAt: Date;
     updatedAt: Date;
@@ -63,6 +64,7 @@ const RoadmapSchema = new Schema<IRoadmap>({
     steps: [RoadmapStepSchema],
     createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     isPublic: { type: Boolean, default: true, index: true },
+    isApproved: { type: Boolean, default: false, index: true },
     tags: [{ type: String, index: true }],
 }, {
     timestamps: true
@@ -74,5 +76,13 @@ RoadmapSchema.index({ subjectRef: 1, difficulty: 1 });
 RoadmapSchema.index({ tags: 1 });
 RoadmapSchema.index({ createdBy: 1 });
 RoadmapSchema.index({ isPublic: 1, subjectRef: 1 });
+RoadmapSchema.index({ isApproved: 1, isPublic: 1 });
+
+// Text search index
+RoadmapSchema.index({
+    title: 'text',
+    description: 'text',
+    tags: 'text'
+});
 
 export const Roadmap = mongoose.model<IRoadmap>('Roadmap', RoadmapSchema);

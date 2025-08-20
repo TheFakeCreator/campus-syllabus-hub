@@ -8,8 +8,8 @@ export const getAllRoadmaps = async (req: Request, res: Response) => {
     try {
         const { branch, type, difficulty, page = 1, limit = 20 } = req.query;
 
-        // Build filter
-        const filter: any = { isPublic: true };
+        // Build filter - only show public AND approved roadmaps
+        const filter: any = { isPublic: true, isApproved: true };
 
         if (type && ['midsem', 'endsem', 'practical', 'general'].includes(type as string)) {
             filter.type = type;
@@ -74,10 +74,11 @@ export const getRoadmapsBySubject = async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'Subject not found' });
         }
 
-        // Build filter
+        // Build filter - only show public AND approved roadmaps
         const filter: any = {
             subjectRef: subject._id,
-            isPublic: true
+            isPublic: true,
+            isApproved: true
         };
 
         if (type && ['midsem', 'endsem', 'practical', 'general'].includes(type as string)) {
@@ -106,7 +107,11 @@ export const getRoadmapById = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        const roadmap = await Roadmap.findById(id)
+        const roadmap = await Roadmap.findOne({
+            _id: id,
+            isPublic: true,
+            isApproved: true
+        })
             .populate('subjectRef', 'code name')
             .populate('createdBy', 'name')
             .populate('steps.resources', 'title type url description provider averageRating totalRatings');
