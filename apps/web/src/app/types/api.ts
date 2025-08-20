@@ -1,4 +1,6 @@
 
+import type { Resource } from '../../types/api';
+
 export interface ApiResponse<T> {
     data: T;
     message?: string;
@@ -21,15 +23,9 @@ export interface SubjectDTO {
     semester: number;
 }
 
-export interface ResourceDTO {
-    id: string;
+export interface RoadmapStepPrerequisite {
     title: string;
-    type: string;
-    tags: string[];
-    provider: string;
-    providerFavicon: string;
-    qualityScore: number;
-    link: string;
+    url?: string;
 }
 
 export interface RoadmapStep {
@@ -38,8 +34,8 @@ export interface RoadmapStep {
     description: string;
     order: number;
     estimatedHours: number;
-    prerequisites: string[];
-    resources: ResourceDTO[];
+    prerequisites: RoadmapStepPrerequisite[];
+    resources: Resource[];
 }
 
 export interface RoadmapDTO {

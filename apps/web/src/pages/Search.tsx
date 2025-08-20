@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search as SearchIcon, Filter, BookOpen, Video, FileText, Book } from 'lucide-react';
+import { Search as SearchIcon, Filter } from 'lucide-react';
 import api from '../lib/api.ts';
+import ResourceCard from '../components/ResourceCard.tsx';
 import type { ResourceWithDetails, Branch, Subject, PaginatedResponse } from '../types/api.ts';
 
 const Search = () => {
@@ -90,36 +91,6 @@ const Search = () => {
         setSearchParams(params);
         searchResources(1);
     }, [query, type, branch, semester, subject]);
-
-    const getResourceIcon = (resourceType: string) => {
-        switch (resourceType) {
-            case 'lecture':
-                return <Video className="w-5 h-5 text-red-500" />;
-            case 'notes':
-                return <FileText className="w-5 h-5 text-blue-500" />;
-            case 'book':
-                return <Book className="w-5 h-5 text-green-500" />;
-            case 'syllabus':
-                return <BookOpen className="w-5 h-5 text-purple-500" />;
-            default:
-                return <FileText className="w-5 h-5 text-gray-500" />;
-        }
-    };
-
-    const getResourceTypeColor = (resourceType: string) => {
-        switch (resourceType) {
-            case 'lecture':
-                return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-            case 'notes':
-                return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-            case 'book':
-                return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-            case 'syllabus':
-                return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
-            default:
-                return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
-        }
-    };
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -264,64 +235,11 @@ const Search = () => {
                         /* Resource List */
                         <div className="space-y-4">
                             {resources.map((resource) => (
-                                <div
+                                <ResourceCard
                                     key={resource._id}
-                                    className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow"
-                                >
-                                    <div className="flex items-start justify-between">
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-3 mb-2">
-                                                {getResourceIcon(resource.type)}
-                                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                                    {resource.title}
-                                                </h3>
-                                                <span className={`px-2 py-1 text-xs font-medium rounded-full ${getResourceTypeColor(resource.type)}`}>
-                                                    {resource.type}
-                                                </span>
-                                            </div>
-
-                                            {resource.description && (
-                                                <p className="text-gray-600 dark:text-gray-400 mb-3">
-                                                    {resource.description}
-                                                </p>
-                                            )}
-
-                                            <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                                                {resource.provider && (
-                                                    <span>Provider: {resource.provider}</span>
-                                                )}
-                                                {resource.subject && (
-                                                    <span>Subject: {resource.subject.code}</span>
-                                                )}
-                                                {resource.qualityScore && (
-                                                    <span>Quality: {resource.qualityScore}/100</span>
-                                                )}
-                                            </div>
-
-                                            {resource.topics && resource.topics.length > 0 && (
-                                                <div className="mt-3 flex flex-wrap gap-2">
-                                                    {resource.topics.map((topic: string, index: number) => (
-                                                        <span
-                                                            key={index}
-                                                            className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded"
-                                                        >
-                                                            {topic}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <a
-                                            href={resource.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex-shrink-0"
-                                        >
-                                            Open Resource
-                                        </a>
-                                    </div>
-                                </div>
+                                    resource={resource}
+                                    showPrerequisites={true}
+                                />
                             ))}
                         </div>
                     )}

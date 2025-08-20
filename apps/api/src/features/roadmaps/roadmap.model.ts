@@ -1,11 +1,16 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
 
+export interface IRoadmapStepPrerequisite {
+    title: string;
+    url?: string;
+}
+
 export interface IRoadmapStep {
     title: string;
     description: string;
     order: number;
     estimatedHours: number;
-    prerequisites?: string[];
+    prerequisites?: IRoadmapStepPrerequisite[];
     resources: Types.ObjectId[];
 }
 
@@ -24,12 +29,17 @@ export interface IRoadmap extends Document {
     updatedAt: Date;
 }
 
+const RoadmapStepPrerequisiteSchema = new Schema<IRoadmapStepPrerequisite>({
+    title: { type: String, required: true },
+    url: { type: String }
+}, { _id: false });
+
 const RoadmapStepSchema = new Schema<IRoadmapStep>({
     title: { type: String, required: true },
     description: { type: String, required: true },
     order: { type: Number, required: true },
     estimatedHours: { type: Number, required: true, min: 0.5, max: 100 },
-    prerequisites: [{ type: String }],
+    prerequisites: [RoadmapStepPrerequisiteSchema],
     resources: [{ type: Schema.Types.ObjectId, ref: 'Resource' }]
 });
 

@@ -34,6 +34,12 @@ export interface Subject {
     topics: string[];
 }
 
+export interface Prerequisite {
+    title: string;
+    description?: string;
+    resourceLink?: string;
+}
+
 export interface Resource {
     _id: string;
     type: 'syllabus' | 'lecture' | 'notes' | 'book';
@@ -44,6 +50,7 @@ export interface Resource {
     subjectRef: string;
     topics: string[];
     tags: string[];
+    prerequisites: Prerequisite[];
     addedBy: string;
     isApproved: boolean;
     qualityScore: number;
@@ -82,13 +89,18 @@ export interface ApiResponse<T = any> {
     error?: string;
 }
 
+export interface RoadmapStepPrerequisite {
+    title: string;
+    url?: string;
+}
+
 export interface RoadmapStep {
     _id: string;
     title: string;
     description: string;
     order: number;
     estimatedHours: number;
-    prerequisites: string[];
+    prerequisites: RoadmapStepPrerequisite[];
     resources: Resource[];
 }
 
@@ -152,7 +164,14 @@ export interface CreateRoadmapRequest {
     title: string;
     description: string;
     difficulty: 'beginner' | 'intermediate' | 'advanced';
-    steps: Omit<RoadmapStep, '_id'>[];
+    steps: {
+        title: string;
+        description: string;
+        order: number;
+        estimatedHours: number;
+        prerequisites: RoadmapStepPrerequisite[];
+        resources: any[];
+    }[];
     tags: string[];
     isPublic: boolean;
 }

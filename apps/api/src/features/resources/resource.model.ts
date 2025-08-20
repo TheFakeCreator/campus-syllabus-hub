@@ -1,5 +1,11 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
 
+export interface IPrerequisite {
+    title: string;
+    description?: string;
+    resourceLink?: string; // Optional link to existing resource
+}
+
 export interface IResource extends Document {
     type: 'syllabus' | 'lecture' | 'notes' | 'book';
     title: string;
@@ -9,6 +15,7 @@ export interface IResource extends Document {
     subjectRef: Types.ObjectId;
     topics: string[];
     tags: string[];
+    prerequisites: IPrerequisite[]; // New field for prerequisites
     addedBy: Types.ObjectId;
     isApproved: boolean;
     qualityScore: number;
@@ -25,6 +32,12 @@ export interface IResource extends Document {
     createdAt: Date;
 }
 
+const PrerequisiteSchema = new Schema<IPrerequisite>({
+    title: { type: String, required: true },
+    description: { type: String },
+    resourceLink: { type: String }
+}, { _id: false });
+
 const ResourceSchema = new Schema<IResource>({
     type: { type: String, enum: ['syllabus', 'lecture', 'notes', 'book'], required: true, index: true },
     title: { type: String, required: true },
@@ -34,6 +47,7 @@ const ResourceSchema = new Schema<IResource>({
     subjectRef: { type: Schema.Types.ObjectId, ref: 'Subject', required: true, index: true },
     topics: [{ type: String }],
     tags: [{ type: String, index: true }],
+    prerequisites: [PrerequisiteSchema], // New field for prerequisites
     addedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     isApproved: { type: Boolean, default: false },
     qualityScore: { type: Number, min: 0, max: 100, default: 0 },

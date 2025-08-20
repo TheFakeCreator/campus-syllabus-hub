@@ -3,13 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { Upload, AlertCircle, CheckCircle } from 'lucide-react';
 import api from '../lib/api.ts';
 import { useAuthStore } from '../store/auth.ts';
-import type { Branch, Subject } from '../types/api.ts';
+import PrerequisiteManager from '../components/PrerequisiteManager.tsx';
+import type { Branch, Subject, Resource, Prerequisite } from '../types/api.ts';
 
 const Contribute = () => {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuthStore();
     const [branches, setBranches] = useState<Branch[]>([]);
     const [subjects, setSubjects] = useState<Subject[]>([]);
+    const [existingResources, setExistingResources] = useState<Resource[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
@@ -25,6 +27,7 @@ const Contribute = () => {
         semester: '',
         subject: '',
         topics: '',
+        prerequisites: [] as Prerequisite[],
     });
 
     // Redirect if not authenticated
@@ -65,6 +68,24 @@ const Contribute = () => {
         fetchSubjects();
     }, [formData.branch, formData.semester]);
 
+    // Fetch existing resources for prerequisite selection
+    useEffect(() => {
+        const fetchExistingResources = async () => {
+            if (!formData.subject) {
+                setExistingResources([]);
+                return;
+            }
+            try {
+                const response = await api.get(`/subjects/${formData.subject}/resources`);
+                setExistingResources(response.data.resources || []);
+            } catch (error) {
+                console.error('Failed to fetch existing resources:', error);
+                setExistingResources([]);
+            }
+        };
+        fetchExistingResources();
+    }, [formData.subject]);
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -79,6 +100,13 @@ const Contribute = () => {
         if (name === 'semester') {
             setFormData(prev => ({ ...prev, subject: '' }));
         }
+    };
+
+    const handlePrerequisitesChange = (prerequisites: Prerequisite[]) => {
+        setFormData(prev => ({
+            ...prev,
+            prerequisites
+        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -102,6 +130,7 @@ const Contribute = () => {
                 provider: formData.provider || undefined,
                 subjectRef: selectedSubject._id,
                 topics: formData.topics ? formData.topics.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
+                prerequisites: formData.prerequisites,
             };
 
             await api.post('/resources', resourceData);
@@ -118,6 +147,7 @@ const Contribute = () => {
                 semester: '',
                 subject: '',
                 topics: '',
+                prerequisites: [],
             });
 
             // Redirect after delay
@@ -343,6 +373,13 @@ const Contribute = () => {
                             </p>
                         </div>
 
+                        {/* Prerequisites */}
+                        <PrerequisiteManager
+                            prerequisites={formData.prerequisites}
+                            onChange={handlePrerequisitesChange}
+                            existingResources={existingResources}
+                        />
+
                         {/* Submit Button */}
                         <div className="flex justify-end">
                             <button
@@ -375,6 +412,7 @@ const Contribute = () => {
                         <li>• Ensure the resource is educational and relevant to the selected subject</li>
                         <li>• Provide accurate and descriptive titles</li>
                         <li>• Include proper descriptions to help others understand the content</li>
+                        <li>• Add prerequisites to help students understand what they need to know first</li>
                         <li>• Only submit resources you have permission to share</li>
                         <li>• Check that the URL is accessible and working</li>
                         <li>• All submissions are reviewed before being published</li>

@@ -220,10 +220,10 @@ export default function RoadmapDetail() {
 
                         return (
                             <div key={step._id} className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border-2 transition-all duration-200 ${isCompleted
-                                    ? 'border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-900/10'
-                                    : canStart
-                                        ? 'border-blue-200 dark:border-blue-800'
-                                        : 'border-gray-200 dark:border-gray-700 opacity-60'
+                                ? 'border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-900/10'
+                                : canStart
+                                    ? 'border-blue-200 dark:border-blue-800'
+                                    : 'border-gray-200 dark:border-gray-700 opacity-60'
                                 }`}>
                                 <div className="p-6">
                                     {/* Step Header */}
@@ -233,10 +233,10 @@ export default function RoadmapDetail() {
                                                 onClick={() => toggleStepCompletion(step._id)}
                                                 disabled={!canStart}
                                                 className={`mt-1 p-1 rounded-full transition-colors ${isCompleted
-                                                        ? 'text-green-600 hover:text-green-700'
-                                                        : canStart
-                                                            ? 'text-gray-400 hover:text-blue-600'
-                                                            : 'text-gray-300 cursor-not-allowed'
+                                                    ? 'text-green-600 hover:text-green-700'
+                                                    : canStart
+                                                        ? 'text-gray-400 hover:text-blue-600'
+                                                        : 'text-gray-300 cursor-not-allowed'
                                                     }`}
                                             >
                                                 <CheckCircle2 className={`h-6 w-6 ${isCompleted ? 'fill-current' : ''}`} />
@@ -253,8 +253,8 @@ export default function RoadmapDetail() {
                                                     </div>
                                                 </div>
                                                 <h3 className={`text-xl font-semibold mb-2 ${isCompleted
-                                                        ? 'text-green-800 dark:text-green-200 line-through'
-                                                        : 'text-gray-900 dark:text-white'
+                                                    ? 'text-green-800 dark:text-green-200 line-through'
+                                                    : 'text-gray-900 dark:text-white'
                                                     }`}>
                                                     {step.title}
                                                 </h3>
@@ -269,9 +269,25 @@ export default function RoadmapDetail() {
                                     {step.prerequisites && step.prerequisites.length > 0 && (
                                         <div className="mb-4">
                                             <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Prerequisites:</h4>
-                                            <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400">
+                                            <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1">
                                                 {step.prerequisites.map((prereq, idx) => (
-                                                    <li key={idx}>{prereq}</li>
+                                                    <li key={idx}>
+                                                        {prereq.url ? (
+                                                            <a
+                                                                href={prereq.url}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 hover:underline inline-flex items-center"
+                                                            >
+                                                                {prereq.title}
+                                                                <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                </svg>
+                                                            </a>
+                                                        ) : (
+                                                            <span>{prereq.title}</span>
+                                                        )}
+                                                    </li>
                                                 ))}
                                             </ul>
                                         </div>
@@ -288,9 +304,9 @@ export default function RoadmapDetail() {
                                                             <div className="flex-1">
                                                                 <div className="flex items-center gap-2 mb-1">
                                                                     <span className={`px-2 py-1 rounded text-xs font-medium ${resource.type === 'lecture' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-                                                                            resource.type === 'notes' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                                                                                resource.type === 'book' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' :
-                                                                                    'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
+                                                                        resource.type === 'notes' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                                                                            resource.type === 'book' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' :
+                                                                                'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
                                                                         }`}>
                                                                         {resource.type}
                                                                     </span>

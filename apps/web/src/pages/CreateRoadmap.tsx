@@ -5,6 +5,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Plus, Trash2, ChevronLeft, Save } from 'lucide-react';
 import { createRoadmap } from '../app/lib/roadmaps';
+import RoadmapStepPrerequisiteManager from '../components/RoadmapStepPrerequisiteManager';
+import type { RoadmapStepPrerequisite } from '../types/api';
 
 // Validation schema
 const roadmapSchema = z.object({
@@ -18,7 +20,10 @@ const roadmapSchema = z.object({
         description: z.string().min(1, 'Step description is required'),
         order: z.number().min(1),
         estimatedHours: z.number().min(0.5).max(100),
-        prerequisites: z.array(z.string()),
+        prerequisites: z.array(z.object({
+            title: z.string().min(1, 'Prerequisite title is required'),
+            url: z.string().url().optional().or(z.literal(''))
+        })),
         resources: z.array(z.any())
     })).min(1, 'At least one step is required'),
     tags: z.array(z.string()),
@@ -115,6 +120,10 @@ export default function CreateRoadmap() {
     const removeTag = (index: number) => {
         const newTags = watchedTags.filter((_, i) => i !== index);
         setValue('tags', newTags);
+    };
+
+    const updateStepPrerequisites = (stepIndex: number, prerequisites: RoadmapStepPrerequisite[]) => {
+        setValue(`steps.${stepIndex}.prerequisites`, prerequisites);
     };
 
     const onSubmit = async (data: RoadmapFormData) => {
@@ -347,6 +356,14 @@ export default function CreateRoadmap() {
                                         {errors.steps?.[index]?.estimatedHours && (
                                             <p className="text-red-500 text-sm mt-1">{errors.steps[index]?.estimatedHours?.message}</p>
                                         )}
+                                    </div>
+
+                                    {/* Prerequisites */}
+                                    <div className="md:col-span-2">
+                                        <RoadmapStepPrerequisiteManager
+                                            prerequisites={watchedSteps[index]?.prerequisites || []}
+                                            onChange={(prerequisites) => updateStepPrerequisites(index, prerequisites)}
+                                        />
                                     </div>
                                 </div>
                             </div>

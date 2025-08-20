@@ -1,5 +1,5 @@
 import api from './api';
-import type { RoadmapDTO, RoadmapFilters, CreateRoadmapRequest, RatingDTO } from '../types/api';
+import type { RoadmapDTO, RoadmapFilters, CreateRoadmapRequest, RatingDTO } from '../../types/api';
 
 export interface RoadmapResponse {
     roadmaps: RoadmapDTO[];

@@ -1,11 +1,16 @@
 import { z } from 'zod';
 
+export const roadmapStepPrerequisiteSchema = z.object({
+    title: z.string().min(1, 'Prerequisite title is required').max(200),
+    url: z.string().url().optional().or(z.literal(''))
+});
+
 export const roadmapStepSchema = z.object({
     title: z.string().min(1, 'Step title is required').max(100),
     description: z.string().min(1, 'Step description is required').max(500),
     order: z.number().int().min(1, 'Order must be at least 1'),
     estimatedHours: z.number().min(0.5, 'Estimated hours must be at least 0.5').max(100),
-    prerequisites: z.array(z.string()).optional(),
+    prerequisites: z.array(roadmapStepPrerequisiteSchema).optional(),
     resources: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid resource ID')).optional()
 });
 
